@@ -800,6 +800,16 @@ function saveRes() {
   const notes    = document.getElementById('f-notes').value.trim();
   const staffing = getStaffing();
 
+  const conflicts = getConflicts(room, date, start, end, editingId);
+  if (conflicts.length) {
+    const c = conflicts[0];
+    const alert = document.getElementById('conflict-alert');
+    alert.textContent = '⚠ Cannot save — "' + c.title + '" is already booked in this space from ' + c.start + '–' + c.end + '. Please choose a different time or space.';
+    alert.classList.add('show');
+    alert.scrollIntoView({behavior:'smooth', block:'nearest'});
+    return;
+  }
+
   if (editingId !== null) {
     const idx = reservations.findIndex(r => r.id === editingId);
     if (idx !== -1) reservations[idx] = {...reservations[idx], title, room, person, start, end, date, tag, notes, staffing};
