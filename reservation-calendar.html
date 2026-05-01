@@ -355,6 +355,7 @@
 <script>
 const STAFF_TYPES = ['Facilities','Exhibits','Education Associates','Art Studio Coordinator','Allied Security','Law Enforcement Officers','Venue Manager','Manager on Duty'];
 const ROOM_COLORS = {r1:'ev-blue',r2:'ev-teal',r3:'ev-amber',r4:'ev-coral',v1:'ev-green',v2:'ev-slate',v3:'ev-indigo',v4:'ev-rose',v5:'ev-gold',v6:'ev-sky',d1:'ev-purple',d2:'ev-blue'};
+const VENUE_SPACES = ['r4','v1','v2','v3','v4','v5','v6'];
 const ROOM_NAMES = {r1:'Boardroom',r2:'Blue Room',r3:'Green Room',r4:'Teaching Kitchen',v1:'Skyline South',v2:'Skyline North',v3:'Skyline All',v4:'Whole Museum',v5:'Art Studio',v6:'Plaza',d1:'Skyline equipment 1–4',d2:'Skyline equipment 5–8'};
 const TAG_STYLES = {
   'Venue Rentals':        {bg:'#E6F1FB',c:'#0C447C'},
@@ -447,10 +448,14 @@ function getSearchQuery() {
 // ── Conflict detection ────────────────────────────────────────────────────────
 function getConflicts(room, date, start, end, excludeId) {
   const sMin = timeToMin(start), eMin = timeToMin(end);
-  return reservations.filter(r =>
-    r.id !== excludeId && r.room === room && r.date === date &&
-    timeToMin(r.start) < eMin && timeToMin(r.end) > sMin
-  );
+  return reservations.filter(r => {
+    if (r.id === excludeId || r.date !== date) return false;
+    if (timeToMin(r.start) >= eMin || timeToMin(r.end) <= sMin) return false;
+    if (r.room === room) return true;
+    // Whole Museum blocks all venue spaces and vice versa
+    if ((room === 'v4' || r.room === 'v4') && VENUE_SPACES.includes(room) && VENUE_SPACES.includes(r.room)) return true;
+    return false;
+  });
 }
 
 function checkConflict() {
@@ -804,7 +809,15 @@ function saveRes() {
   if (conflicts.length) {
     const c = conflicts[0];
     const alert = document.getElementById('conflict-alert');
-    alert.textContent = '⚠ Cannot save — "' + c.title + '" is already booked in this space from ' + c.start + '–' + c.end + '. Please choose a different time or space.';
+    let msg = '⚠ Cannot save — "' + c.title + '" is already booked in ' + ROOM_NAMES[c.room] + ' from ' + c.start + '–' + c.end + '.';
+    if (room === 'v4' && c.room !== 'v4') {
+      msg += ' Whole Museum cannot be reserved while any venue space is in use.';
+    } else if (c.room === 'v4') {
+      msg += ' No venue spaces are available while Whole Museum is reserved.';
+    } else {
+      msg += ' Please choose a different time or space.';
+    }
+    alert.textContent = msg;
     alert.classList.add('show');
     alert.scrollIntoView({behavior:'smooth', block:'nearest'});
     return;
