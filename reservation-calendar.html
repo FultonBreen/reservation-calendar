@@ -151,6 +151,48 @@
   .recur-options.show { display: block; }
   .recur-options select { width: 100%; padding: 6px 10px; font-size: 12px; border: 0.5px solid #ccc; border-radius: 8px; background: #fff; font-family: inherit; outline: none; }
   .recur-options select:focus { border-color: #378ADD; box-shadow: 0 0 0 2px rgba(55,138,221,0.15); }
+
+  /* Mobile */
+  .menu-btn { display: none; background: none; border: 0.5px solid #ccc; border-radius: 8px; padding: 4px 10px; font-size: 16px; cursor: pointer; color: #444; line-height: 1.4; }
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 89; }
+  .sidebar-overlay.show { display: block; }
+
+  @media (max-width: 640px) {
+    body { padding: 0; }
+    .app { flex-direction: column; height: 100dvh; border-radius: 0; border: none; max-width: 100%; }
+
+    /* Sidebar becomes a fixed slide-over panel */
+    .sidebar { position: fixed; inset: 0 auto 0 0; width: 260px; z-index: 90; transform: translateX(-100%); transition: transform .22s ease; border-right: 0.5px solid #ddd; }
+    .sidebar.open { transform: translateX(0); }
+
+    /* Toolbar */
+    .menu-btn { display: inline-flex; align-items: center; }
+    .toolbar { padding: 8px 10px; gap: 5px; flex-wrap: nowrap; }
+    .period-label { font-size: 12px; min-width: 0; flex: 1; text-align: center; }
+    .search-wrap { display: none; }
+    .new-btn { padding: 5px 10px; font-size: 12px; white-space: nowrap; }
+
+    /* Calendar body fills remaining height */
+    .cal-body { flex: 1; min-height: 0; }
+
+    /* Month view — bigger touch targets */
+    .mday { padding: 3px; }
+    .mdn { font-size: 12px; width: 22px; height: 22px; }
+    .mev { font-size: 9px; padding: 2px 4px; margin-bottom: 1px; }
+
+    /* Week view — horizontal scroll */
+    .week-view { overflow-x: auto; }
+    .col-headers, .tgrid { min-width: 480px; }
+
+    /* Detail panel — pinned to bottom center */
+    .detail-panel { position: fixed !important; left: 50% !important; transform: translateX(-50%); top: auto !important; bottom: 12px; width: calc(100vw - 24px); max-width: 380px; box-shadow: 0 8px 32px rgba(0,0,0,.18); }
+
+    /* Modal — bottom sheet */
+    .modal-bg { align-items: flex-end; padding: 0; }
+    .modal { width: 100%; max-width: 100%; border-radius: 16px 16px 0 0; padding: 20px 16px 28px; max-height: 88dvh; }
+    .modal h3 { font-size: 15px; }
+    .field input, .field select, .field textarea { font-size: 16px; } /* prevents iOS zoom */
+  }
 </style>
 </head>
 <body>
@@ -201,6 +243,7 @@
 
   <div class="main">
     <div class="toolbar">
+      <button class="menu-btn" onclick="toggleSidebar()">&#9776;</button>
       <button class="nav-btn" onclick="navPrev()">&#8249;</button>
       <span class="period-label" id="period-label"></span>
       <button class="nav-btn" onclick="navNext()">&#8250;</button>
@@ -219,6 +262,8 @@
     <div class="cal-body" id="cal-body"></div>
   </div>
 </div>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <div id="modal" style="display:none" class="modal-bg" onclick="handleModalBgClick(event)">
   <div class="modal" onclick="event.stopPropagation()">
@@ -477,10 +522,12 @@ function setFilter(f) {
   activeFilter = f;
   document.querySelectorAll('.ri').forEach(el => el.classList.remove('active'));
   document.getElementById('filter-'+f).classList.add('active');
+  closeSidebar();
   render();
 }
 function setDeptFilter(val) {
   activeDept = val;
+  closeSidebar();
   render();
 }
 
@@ -789,6 +836,16 @@ function exportCSV() {
   a.href = URL.createObjectURL(blob);
   a.download = 'reservations.csv';
   a.click();
+}
+
+// ── Sidebar (mobile) ─────────────────────────────────────────────────────────
+function toggleSidebar() {
+  const open = document.querySelector('.sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('show', open);
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
