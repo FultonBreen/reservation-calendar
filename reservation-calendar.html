@@ -594,7 +594,7 @@ function renderTimeColumns(dates) {
 
 function renderWeek() {
   const ws = getWeekStart();
-  const dates = Array.from({length:5}, (_,i) => { const d = new Date(ws); d.setDate(ws.getDate()+i); return d; });
+  const dates = Array.from({length:7}, (_,i) => { const d = new Date(ws); d.setDate(ws.getDate()+i); return d; });
   return `<div class="week-view">${renderTimeColumns(dates)}</div>`;
 }
 function renderDay() { return `<div class="day-view">${renderTimeColumns([getDayDate()])}</div>`; }
