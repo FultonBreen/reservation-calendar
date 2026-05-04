@@ -205,14 +205,8 @@
     </div>
     <div class="resource-list">
       <div class="resource-section">
-        <div class="rsl">Meeting rooms</div>
-        <div class="ri active" onclick="setFilter('all')" id="filter-all"><div class="dot d-gray"></div>All spaces</div>
-        <div class="ri" onclick="setFilter('r1')" id="filter-r1"><div class="dot d-blue"></div>Boardroom<span class="cap">12</span></div>
-        <div class="ri" onclick="setFilter('r2')" id="filter-r2"><div class="dot d-teal"></div>Blue Room<span class="cap">4</span></div>
-        <div class="ri" onclick="setFilter('r3')" id="filter-r3"><div class="dot d-amber"></div>Green Room<span class="cap">4</span></div>
-      </div>
-      <div class="resource-section">
         <div class="rsl">Venue spaces</div>
+        <div class="ri active" onclick="setFilter('all')" id="filter-all"><div class="dot d-gray"></div>All spaces</div>
         <div class="ri" onclick="setFilter('r4')" id="filter-r4"><div class="dot d-coral"></div>Teaching Kitchen</div>
         <div class="ri" onclick="setFilter('v1')" id="filter-v1"><div class="dot d-green"></div>Skyline South</div>
         <div class="ri" onclick="setFilter('v2')" id="filter-v2"><div class="dot d-slate"></div>Skyline North</div>
@@ -220,6 +214,12 @@
         <div class="ri" onclick="setFilter('v4')" id="filter-v4"><div class="dot d-rose"></div>Whole Museum</div>
         <div class="ri" onclick="setFilter('v5')" id="filter-v5"><div class="dot d-gold"></div>Art Studio</div>
         <div class="ri" onclick="setFilter('v6')" id="filter-v6"><div class="dot d-sky"></div>Plaza</div>
+      </div>
+      <div class="resource-section">
+        <div class="rsl">Meeting rooms</div>
+        <div class="ri" onclick="setFilter('r1')" id="filter-r1"><div class="dot d-blue"></div>Boardroom<span class="cap">12</span></div>
+        <div class="ri" onclick="setFilter('r2')" id="filter-r2"><div class="dot d-teal"></div>Blue Room<span class="cap">4</span></div>
+        <div class="ri" onclick="setFilter('r3')" id="filter-r3"><div class="dot d-amber"></div>Green Room<span class="cap">4</span></div>
       </div>
       <div class="resource-section">
         <div class="rsl">Department</div>
@@ -679,11 +679,11 @@ function showDetail(e, id) {
 }
 
 function cancelRes(id) {
-  if (!confirm('Cancel this reservation?')) return;
+  if (!confirm('Delete this reservation?')) return;
   reservations = reservations.filter(r => r.id !== id);
   saveReservations();
   document.querySelectorAll('.detail-panel').forEach(el => el.remove());
-  showToast('Reservation cancelled');
+  showToast('Reservation deleted');
   render();
 }
 
