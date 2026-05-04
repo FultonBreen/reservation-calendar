@@ -20,6 +20,7 @@
   .ri { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 8px; cursor: pointer; font-size: 13px; color: #666; }
   .ri:hover { background: #fff; }
   .ri.active { background: #fff; color: #1a1a1a; font-weight: 500; }
+  .ri input[type=checkbox] { width: 14px; height: 14px; margin: 0; cursor: pointer; accent-color: #1a1a1a; flex-shrink: 0; }
   .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .d-blue { background: #378ADD; } .d-teal { background: #1D9E75; } .d-amber { background: #BA7517; }
   .d-coral { background: #D85A30; } .d-gray { background: #888780; } .d-purple { background: #7F77DD; }
@@ -206,14 +207,14 @@
     <div class="resource-list">
       <div class="resource-section">
         <div class="rsl">Venue spaces</div>
-        <div class="ri active" onclick="setFilter('all')" id="filter-all"><div class="dot d-gray"></div>All spaces</div>
-        <div class="ri" onclick="setFilter('r4')" id="filter-r4"><div class="dot d-coral"></div>Teaching Kitchen</div>
-        <div class="ri" onclick="setFilter('v1')" id="filter-v1"><div class="dot d-green"></div>Skyline South</div>
-        <div class="ri" onclick="setFilter('v2')" id="filter-v2"><div class="dot d-slate"></div>Skyline North</div>
-        <div class="ri" onclick="setFilter('v3')" id="filter-v3"><div class="dot d-indigo"></div>Skyline All</div>
-        <div class="ri" onclick="setFilter('v4')" id="filter-v4"><div class="dot d-rose"></div>Whole Museum</div>
-        <div class="ri" onclick="setFilter('v5')" id="filter-v5"><div class="dot d-gold"></div>Art Studio</div>
-        <div class="ri" onclick="setFilter('v6')" id="filter-v6"><div class="dot d-sky"></div>Plaza</div>
+        <label class="ri" id="filter-all"><input type="checkbox" class="space-cb" id="cb-all" value="all" checked onchange="handleSpaceFilter('all',this.checked)"><div class="dot d-gray"></div>All spaces</label>
+        <label class="ri" id="filter-v4"><input type="checkbox" class="space-cb" id="cb-v4" value="v4" onchange="handleSpaceFilter('v4',this.checked)"><div class="dot d-rose"></div>Whole Museum</label>
+        <label class="ri" id="filter-v1"><input type="checkbox" class="space-cb" id="cb-v1" value="v1" onchange="handleSpaceFilter('v1',this.checked)"><div class="dot d-green"></div>Skyline South</label>
+        <label class="ri" id="filter-v2"><input type="checkbox" class="space-cb" id="cb-v2" value="v2" onchange="handleSpaceFilter('v2',this.checked)"><div class="dot d-slate"></div>Skyline North</label>
+        <label class="ri" id="filter-v3"><input type="checkbox" class="space-cb" id="cb-v3" value="v3" onchange="handleSpaceFilter('v3',this.checked)"><div class="dot d-indigo"></div>Skyline All</label>
+        <label class="ri" id="filter-v6"><input type="checkbox" class="space-cb" id="cb-v6" value="v6" onchange="handleSpaceFilter('v6',this.checked)"><div class="dot d-sky"></div>Plaza</label>
+        <label class="ri" id="filter-v5"><input type="checkbox" class="space-cb" id="cb-v5" value="v5" onchange="handleSpaceFilter('v5',this.checked)"><div class="dot d-gold"></div>Art Studio</label>
+        <label class="ri" id="filter-r4"><input type="checkbox" class="space-cb" id="cb-r4" value="r4" onchange="handleSpaceFilter('r4',this.checked)"><div class="dot d-coral"></div>Teaching Kitchen</label>
       </div>
       <div class="resource-section">
         <div class="rsl">Department</div>
@@ -374,7 +375,8 @@ const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const STORAGE_KEY = 'reservations_v2';
 
-let view = 'month', offset = 0, activeFilter = 'all', activeDept = '', srCount = 0, editingId = null;
+let view = 'month', offset = 0, activeFilters = new Set(['all']), activeDept = '', srCount = 0, editingId = null;
+const ALL_VENUE_IDS = ['v4','v1','v2','v3','v6','v5','r4'];
 
 const today = new Date();
 today.setHours(0,0,0,0);
@@ -513,11 +515,21 @@ function setView(v) {
 function navPrev() { offset--; render(); }
 function navNext() { offset++; render(); }
 function navToday() { offset = 0; render(); }
-function setFilter(f) {
-  activeFilter = f;
-  document.querySelectorAll('.ri').forEach(el => el.classList.remove('active'));
-  document.getElementById('filter-'+f).classList.add('active');
-  closeSidebar();
+function handleSpaceFilter(id, checked) {
+  if (id === 'all') {
+    activeFilters = checked ? new Set(['all']) : new Set();
+    document.querySelectorAll('.space-cb:not(#cb-all)').forEach(cb => { cb.checked = false; });
+    document.getElementById('cb-all').checked = checked;
+  } else {
+    activeFilters.delete('all');
+    document.getElementById('cb-all').checked = false;
+    checked ? activeFilters.add(id) : activeFilters.delete(id);
+    // if all individuals checked, restore "All spaces"
+    if (ALL_VENUE_IDS.every(i => activeFilters.has(i))) {
+      activeFilters = new Set(['all']);
+      document.querySelectorAll('.space-cb').forEach(cb => { cb.checked = cb.value === 'all'; });
+    }
+  }
   render();
 }
 function setDeptFilter(val) {
@@ -534,7 +546,7 @@ function setDeptFilter(val) {
 function filteredForDate(dk) {
   const q = getSearchQuery();
   return reservations.filter(r => {
-    if (activeFilter !== 'all' && r.room !== activeFilter) return false;
+    if (!activeFilters.has('all') && activeFilters.size > 0 && !activeFilters.has(r.room)) return false;
     if (r.date !== dk) return false;
     if (activeDept && r.tag !== activeDept) return false;
     if (q && !r.title.toLowerCase().includes(q) &&
