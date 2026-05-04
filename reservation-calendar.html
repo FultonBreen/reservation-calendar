@@ -368,8 +368,8 @@ const MONTH_STYLES = {
   'ev-gold':  {bg:'#FDF3D9',bc:'#B5860D',tc:'#5A3E02'},
   'ev-sky':   {bg:'#E0F4F8',bc:'#0891B2',tc:'#054D60'},
 };
-const HOUR_H = 46;
-const HOURS = [8,9,10,11,12,13,14,15,16,17,18];
+const HOUR_H = 58;
+const HOURS = [9,10,11,12,13,14,15,16,17,18];
 const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const STORAGE_KEY = 'reservations_v2';
@@ -415,7 +415,7 @@ function dateKey(d) { return d.toISOString().slice(0,10); }
 function parseDate(s) { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); }
 function sameDay(a,b) { return a.toDateString() === b.toDateString(); }
 function timeToMin(t) { const [h,m] = t.split(':').map(Number); return h*60+m; }
-function timeToY(t) { const [h,m] = t.split(':').map(Number); return ((h-8)+m/60)*HOUR_H; }
+function timeToY(t) { const [h,m] = t.split(':').map(Number); return ((h-HOURS[0])+m/60)*HOUR_H; }
 
 function showToast(msg, isError) {
   const el = document.getElementById('toast');
@@ -573,7 +573,7 @@ function renderTimeColumns(dates) {
           </div>`;
         });
         if (sameDay(d, today) && (view==='week'||view==='day')) {
-          const now = new Date(), ny = ((now.getHours()-8)+now.getMinutes()/60)*HOUR_H;
+          const now = new Date(), ny = ((now.getHours()-HOURS[0])+now.getMinutes()/60)*HOUR_H;
           if (ny >= 0) evHtml += `<div class="cur-time" style="top:${ny}px"></div>`;
         }
       }
