@@ -43,6 +43,8 @@
   .vt.active { background: #f0f0ee; color: #1a1a1a; font-weight: 500; }
   .new-btn { background: #1a1a1a; color: #fff; border: none; border-radius: 8px; padding: 5px 12px; font-size: 14px; cursor: pointer; margin-left: auto; }
   .new-btn:hover { background: #333; }
+  .toolbar-top { display: contents; }
+  .toolbar-bottom { display: contents; }
   .search-wrap { position: relative; }
   .search-input { border: 0.5px solid #ccc; border-radius: 8px; padding: 4px 10px 4px 26px; font-size: 14px; color: #1a1a1a; font-family: inherit; outline: none; width: 140px; background: #fff; }
   .search-input:focus { border-color: #378ADD; box-shadow: 0 0 0 2px rgba(55,138,221,0.15); }
@@ -166,12 +168,15 @@
     .sidebar { position: fixed; inset: 0 auto 0 0; width: 260px; z-index: 90; transform: translateX(-100%); transition: transform .22s ease; border-right: 0.5px solid #ddd; }
     .sidebar.open { transform: translateX(0); }
 
-    /* Toolbar */
+    /* Toolbar — two rows on mobile */
     .menu-btn { display: inline-flex; align-items: center; }
-    .toolbar { padding: 8px 10px; gap: 5px; flex-wrap: nowrap; }
-    .period-label { font-size: 12px; min-width: 0; flex: 1; text-align: center; }
+    .toolbar { padding: 8px 10px; gap: 6px; flex-wrap: nowrap; flex-direction: column; }
+    .toolbar-top { display: flex; width: 100%; align-items: center; gap: 6px; }
+    .toolbar-bottom { display: flex; width: 100%; align-items: center; gap: 5px; }
+    .toolbar-top .period-label { flex: 1; font-size: 14px; text-align: center; min-width: 0; }
+    .toolbar-top .new-btn { margin-left: 0; padding: 6px 14px; font-size: 13px; white-space: nowrap; }
+    .toolbar-top .nav-btn { font-size: 18px; padding: 4px 12px; }
     .search-wrap { display: none; }
-    .new-btn { padding: 5px 10px; font-size: 12px; white-space: nowrap; }
 
     /* Calendar body fills remaining height */
     .cal-body { flex: 1; min-height: 0; }
@@ -234,21 +239,25 @@
 
   <div class="main">
     <div class="toolbar">
-      <button class="menu-btn" onclick="toggleSidebar()">&#9776;</button>
-      <button class="nav-btn" onclick="navPrev()">&#8249;</button>
-      <span class="period-label" id="period-label"></span>
-      <button class="nav-btn" onclick="navNext()">&#8250;</button>
-      <button class="nav-btn" onclick="navToday()">Today</button>
-      <div class="view-tabs">
-        <button class="vt active" id="vt-month" onclick="setView('month')">Month</button>
-        <button class="vt" id="vt-week" onclick="setView('week')">Week</button>
-        <button class="vt" id="vt-day" onclick="setView('day')">Day</button>
+      <div class="toolbar-top">
+        <button class="nav-btn" onclick="navPrev()">&#8249;</button>
+        <span class="period-label" id="period-label"></span>
+        <button class="nav-btn" onclick="navNext()">&#8250;</button>
+        <button class="new-btn" onclick="openModal()">+ Reserve</button>
       </div>
-      <div class="search-wrap">
-        <span class="search-icon">&#9906;</span>
-        <input class="search-input" id="search-input" placeholder="Search&#8230;" oninput="render()">
+      <div class="toolbar-bottom">
+        <button class="menu-btn" onclick="toggleSidebar()">&#9776;</button>
+        <button class="nav-btn" onclick="navToday()">Today</button>
+        <div class="view-tabs">
+          <button class="vt active" id="vt-month" onclick="setView('month')">Month</button>
+          <button class="vt" id="vt-week" onclick="setView('week')">Week</button>
+          <button class="vt" id="vt-day" onclick="setView('day')">Day</button>
+        </div>
+        <div class="search-wrap">
+          <span class="search-icon">&#9906;</span>
+          <input class="search-input" id="search-input" placeholder="Search&#8230;" oninput="render()">
+        </div>
       </div>
-      <button class="new-btn" onclick="openModal()">+ Reserve</button>
     </div>
     <div class="cal-body" id="cal-body"></div>
   </div>
