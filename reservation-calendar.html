@@ -216,24 +216,14 @@
         <div class="ri" onclick="setFilter('v6')" id="filter-v6"><div class="dot d-sky"></div>Plaza</div>
       </div>
       <div class="resource-section">
-        <div class="rsl">Meeting rooms</div>
-        <div class="ri" onclick="setFilter('r1')" id="filter-r1"><div class="dot d-blue"></div>Boardroom<span class="cap">12</span></div>
-        <div class="ri" onclick="setFilter('r2')" id="filter-r2"><div class="dot d-teal"></div>Blue Room<span class="cap">4</span></div>
-        <div class="ri" onclick="setFilter('r3')" id="filter-r3"><div class="dot d-amber"></div>Green Room<span class="cap">4</span></div>
-      </div>
-      <div class="resource-section">
         <div class="rsl">Department</div>
-        <div style="padding:4px 8px 2px">
-          <select id="dept-filter" onchange="setDeptFilter(this.value)" style="width:100%;padding:6px 8px;font-size:12px;border:0.5px solid #ddd;border-radius:8px;background:#fff;color:#444;font-family:inherit;outline:none;cursor:pointer;">
-            <option value="">All departments</option>
-            <option value="Venue Rentals">Venue Rentals</option>
-            <option value="Field Trips">Field Trips</option>
-            <option value="Membership events">Membership events</option>
-            <option value="Development events">Development events</option>
-            <option value="Education events">Education events</option>
-            <option value="Management and board">Management and board</option>
-          </select>
-        </div>
+        <div class="ri active" onclick="setDeptFilter('')" id="dept-all"><div class="dot d-gray"></div>All departments</div>
+        <div class="ri" onclick="setDeptFilter('Venue Rentals')" id="dept-1"><div class="dot" style="background:#0C447C"></div>Venue Rentals</div>
+        <div class="ri" onclick="setDeptFilter('Field Trips')" id="dept-2"><div class="dot" style="background:#085041"></div>Field Trips</div>
+        <div class="ri" onclick="setDeptFilter('Membership events')" id="dept-3"><div class="dot" style="background:#3C3489"></div>Membership events</div>
+        <div class="ri" onclick="setDeptFilter('Development events')" id="dept-4"><div class="dot" style="background:#633806"></div>Development events</div>
+        <div class="ri" onclick="setDeptFilter('Education events')" id="dept-5"><div class="dot" style="background:#4A1B0C"></div>Education events</div>
+        <div class="ri" onclick="setDeptFilter('Management and board')" id="dept-6"><div class="dot" style="background:#444441"></div>Management and board</div>
       </div>
     </div>
     <div class="sidebar-footer">
@@ -532,6 +522,10 @@ function setFilter(f) {
 }
 function setDeptFilter(val) {
   activeDept = val;
+  const deptIds = {'':'dept-all','Venue Rentals':'dept-1','Field Trips':'dept-2','Membership events':'dept-3','Development events':'dept-4','Education events':'dept-5','Management and board':'dept-6'};
+  document.querySelectorAll('[id^="dept-"]').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById(deptIds[val]);
+  if (target) target.classList.add('active');
   closeSidebar();
   render();
 }
