@@ -401,7 +401,7 @@ function loadReservations() {
 async function loadReservationsFromSheet() {
   try {
     showSyncStatus('loading');
-    const res = await fetch(SHEET_URL);
+    const res = await fetch(SHEET_URL + '?cachebust=' + Date.now());
     const json = await res.json();
     if (json.success && json.data.length > 0) {
       reservations = json.data.map(r => ({
@@ -411,7 +411,6 @@ async function loadReservationsFromSheet() {
       }));
       nextId = reservations.reduce((m, r) => Math.max(m, r.id), 0) + 1;
     } else if (json.success && json.data.length === 0) {
-      // Sheet is empty — push defaults up
       reservations = buildDefaults();
       nextId = reservations.reduce((m, r) => Math.max(m, r.id), 0) + 1;
       await saveAllToSheet();
@@ -429,6 +428,7 @@ async function saveReservations() {
     showSyncStatus('saving');
     await fetch(SHEET_URL, {
       method: 'POST',
+      mode: 'no-cors',
       body: JSON.stringify({ action: 'saveAll', reservations })
     });
     hideSyncStatus();
@@ -443,6 +443,7 @@ async function saveOneReservation(res) {
     showSyncStatus('saving');
     await fetch(SHEET_URL, {
       method: 'POST',
+      mode: 'no-cors',
       body: JSON.stringify({ action: 'save', reservation: res })
     });
     hideSyncStatus();
@@ -457,6 +458,7 @@ async function deleteOneReservation(id) {
     showSyncStatus('saving');
     await fetch(SHEET_URL, {
       method: 'POST',
+      mode: 'no-cors',
       body: JSON.stringify({ action: 'delete', id })
     });
     hideSyncStatus();
@@ -469,6 +471,7 @@ async function deleteOneReservation(id) {
 async function saveAllToSheet() {
   await fetch(SHEET_URL, {
     method: 'POST',
+    mode: 'no-cors',
     body: JSON.stringify({ action: 'saveAll', reservations })
   });
 }
