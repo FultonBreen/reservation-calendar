@@ -410,20 +410,24 @@ async function loadReservationsFromSheet() {
   try {
     showSyncStatus('loading');
     const json = await sheetGet({ action: 'load' });
-    if (json.success && json.data.length > 0) {
+    if (json.success && json.data && json.data.length > 0) {
       reservations = json.data.map(r => ({
         ...r,
         id: Number(r.id),
+        // Google Sheets may return dates as "Tue May 05 2026 ..." strings — normalize to YYYY-MM-DD
+        date: String(r.date).length === 10 ? String(r.date) : new Date(r.date).toISOString().slice(0,10),
         staffing: Array.isArray(r.staffing) ? r.staffing : []
       }));
       nextId = reservations.reduce((m, r) => Math.max(m, r.id), 0) + 1;
-    } else if (json.success && json.data.length === 0) {
-      reservations = buildDefaults();
-      nextId = reservations.reduce((m, r) => Math.max(m, r.id), 0) + 1;
-      await sheetGet({ action: 'saveAll', data: reservations });
+      hideSyncStatus();
+      render();
+    } else if (json.success && (!json.data || json.data.length === 0)) {
+      // Sheet is empty — load defaults but don't overwrite Sheet
+      hideSyncStatus();
+    } else {
+      showSyncStatus('error');
+      console.error('Unexpected response:', json);
     }
-    hideSyncStatus();
-    render();
   } catch(e) {
     showSyncStatus('error');
     console.error('Failed to load from Google Sheets:', e);
