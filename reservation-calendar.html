@@ -52,13 +52,13 @@
   .cal-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
 
   /* Week / Day views */
-  .week-view, .day-view { display: flex; flex-direction: column; height: 100%; }
+  .week-view, .day-view { display: flex; flex-direction: column; }
   .col-headers { display: grid; border-bottom: 0.5px solid #ddd; flex-shrink: 0; }
   .ch { padding: 7px 6px; text-align: center; font-size: 13px; color: #888; }
   .ch .dn { font-size: 20px; font-weight: 500; color: #1a1a1a; line-height: 1.2; }
   .ch.today .dn { color: #378ADD; }
   .tgrid { overflow-y: auto; display: grid; }
-  .tlabel { font-size: 12px; color: #bbb; padding: 0 5px; text-align: right; height: 58px; display: flex; align-items: flex-start; padding-top: 3px; }
+  .tlabel { font-size: 12px; color: #bbb; padding: 0 5px; text-align: right; height: 40px; display: flex; align-items: flex-start; padding-top: 3px; }
   .dcol { border-left: 0.5px solid #eee; position: relative; cursor: pointer; }
   .dcol:hover { background: rgba(55,138,221,0.02); }
   .hline { position: absolute; left: 0; right: 0; border-top: 0.5px solid #eee; }
@@ -379,23 +379,10 @@ const MONTH_STYLES = {
   'ev-gold':  {bg:'#FDF3D9',bc:'#B5860D',tc:'#1a1a1a'},
   'ev-sky':   {bg:'#E0F4F8',bc:'#0891B2',tc:'#1a1a1a'},
 };
-let HOUR_H = 58;
+let HOUR_H = 40;
 const HOURS = [9,10,11,12,13,14,15,16,17];
 
-function calcHourH() {
-  const app = document.querySelector('.app');
-  const toolbar = document.querySelector('.toolbar');
-  if (!app || !toolbar) return;
-  const appH = app.clientHeight;
-  const toolbarH = toolbar.offsetHeight;
-  const colHeaderH = 55; // approximate col-headers height
-  const available = appH - toolbarH - colHeaderH - 4;
-  HOUR_H = Math.floor(available / HOURS.length);
-  // also update tlabel height via a style tag
-  let style = document.getElementById('dynamic-hour-style');
-  if (!style) { style = document.createElement('style'); style.id = 'dynamic-hour-style'; document.head.appendChild(style); }
-  style.textContent = `.tlabel { height: ${HOUR_H}px !important; }`;
-}
+function calcHourH() {}
 const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const STORAGE_KEY = 'reservations_v2';
