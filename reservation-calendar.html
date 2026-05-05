@@ -379,8 +379,23 @@ const MONTH_STYLES = {
   'ev-gold':  {bg:'#FDF3D9',bc:'#B5860D',tc:'#1a1a1a'},
   'ev-sky':   {bg:'#E0F4F8',bc:'#0891B2',tc:'#1a1a1a'},
 };
-const HOUR_H = 58;
+let HOUR_H = 58;
 const HOURS = [9,10,11,12,13,14,15,16,17];
+
+function calcHourH() {
+  const app = document.querySelector('.app');
+  const toolbar = document.querySelector('.toolbar');
+  if (!app || !toolbar) return;
+  const appH = app.clientHeight;
+  const toolbarH = toolbar.offsetHeight;
+  const colHeaderH = 55; // approximate col-headers height
+  const available = appH - toolbarH - colHeaderH - 4;
+  HOUR_H = Math.floor(available / HOURS.length);
+  // also update tlabel height via a style tag
+  let style = document.getElementById('dynamic-hour-style');
+  if (!style) { style = document.createElement('style'); style.id = 'dynamic-hour-style'; document.head.appendChild(style); }
+  style.textContent = `.tlabel { height: ${HOUR_H}px !important; }`;
+}
 const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const STORAGE_KEY = 'reservations_v2';
@@ -504,7 +519,7 @@ let reservations = loadReservations();
 let nextId = reservations.reduce((m,r) => Math.max(m, r.id), 0) + 1;
 
 // Load live data from Google Sheets on startup
-document.addEventListener('DOMContentLoaded', () => loadReservationsFromSheet());
+document.addEventListener('DOMContentLoaded', () => { calcHourH(); render(); loadReservationsFromSheet(); });
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 function dateKey(d) { return d.toISOString().slice(0,10); }
@@ -972,8 +987,10 @@ function closeSidebar() {
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
+calcHourH();
 render();
 setInterval(() => { if (view !== 'month') render(); }, 60000);
+window.addEventListener('resize', () => { calcHourH(); render(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
 </body>
