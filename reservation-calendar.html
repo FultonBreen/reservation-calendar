@@ -57,8 +57,8 @@
   .ch { padding: 7px 6px; text-align: center; font-size: 13px; color: #888; }
   .ch .dn { font-size: 20px; font-weight: 500; color: #1a1a1a; line-height: 1.2; }
   .ch.today .dn { color: #378ADD; }
-  .tgrid { overflow-y: auto; display: grid; }
-  .tlabel { font-size: 12px; color: #bbb; padding: 0 5px; text-align: right; height: 5px; display: flex; align-items: flex-start; padding-top: 3px; }
+  .tgrid { overflow-y: scroll; display: grid; max-height: 520px; }
+  .tlabel { font-size: 12px; color: #bbb; padding: 0 5px; text-align: right; height: 58px; display: flex; align-items: flex-start; padding-top: 3px; }
   .dcol { border-left: 0.5px solid #eee; position: relative; cursor: pointer; }
   .dcol:hover { background: rgba(55,138,221,0.02); }
   .hline { position: absolute; left: 0; right: 0; border-top: 0.5px solid #eee; }
@@ -379,7 +379,7 @@ const MONTH_STYLES = {
   'ev-gold':  {bg:'#FDF3D9',bc:'#B5860D',tc:'#1a1a1a'},
   'ev-sky':   {bg:'#E0F4F8',bc:'#0891B2',tc:'#1a1a1a'},
 };
-let HOUR_H = 5;
+let HOUR_H = 58;
 const HOURS = [9,10,11,12,13,14,15,16,17];
 
 function calcHourH() {}
